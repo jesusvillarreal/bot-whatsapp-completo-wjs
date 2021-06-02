@@ -50,7 +50,9 @@ const sendMedia = (number, fileName) => {
 const sendMessage = (number = null, text = null) => {
   number = number.replace("@c.us", "");
   number = `${number}@c.us`;
-  const message = text || `Hola soy un BOT `;
+  const message =
+    text ||
+    `Esto es un mensaje de respuesta rápida. Solo se necesita el numero `;
   client.sendMessage(number, message);
   readChat(number, message);
   console.log(`${chalk.red("Enviando mensajes....")}`);
@@ -88,7 +90,8 @@ const listenMessage = () => {
 const replyAsk = (from, answer) =>
   new Promise((resolve, reject) => {
     console.log(`---------->`, answer);
-    if (answer === "hola") {
+    if (answer === "chatbot") {
+      sendMessage(from, "Esto es un mensaje de autorespuesta estilo chatbot");
       sendMedia(from, "goku-3.jpg");
       resolve(true);
     }
