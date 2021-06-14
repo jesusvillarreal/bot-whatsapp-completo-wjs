@@ -1,5 +1,7 @@
 const fs = require("fs");
 const mimeDb = require("mime-db");
+const mysql = require("mysql");
+const bodyParser = require("body-parser");
 const express = require("express");
 const moment = require("moment");
 const ora = require("ora");
@@ -8,9 +10,12 @@ const ExcelJS = require("exceljs");
 const qrcode = require("qrcode-terminal");
 const { flowConversation } = require("./conversation");
 const { Client, MessageMedia } = require("whatsapp-web.js");
+var cors = require("cors");
 const app = express();
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 const SESSION_FILE_PATH = "./session.json";
+app.use(cors());
 let client;
 let sessionData;
 
@@ -266,10 +271,24 @@ const greetCustomer = (from) =>
  * Controladores
  */
 
-const sendMessagePost = (req, res) => {
-  const { message, number } = req.body;
-  console.log(message, number);
-  sendMessage(number, message);
+// const sendMessagePost = (req, res) => {
+//   const { message, number } = req.body;
+//   console.log(message, number);
+//   sendMessage(number, message);
+//   res.send({ status: "Enviado!" });
+// };
+const sendMediaPost = (req, res) => {
+  const { media, number, message } = req.body;
+  console.log(media, number);
+  if (message === undefined) {
+    sendMedia(number, media);
+  } else if (media === undefined) {
+    sendMessage(number, message);
+  } else {
+    sendMedia(number, media);
+    sendMessage(number, message);
+  }
+  console.log(media, number, message);
   res.send({ status: "Enviado!" });
 };
 
@@ -277,7 +296,8 @@ const sendMessagePost = (req, res) => {
  * Rutas
  */
 
-app.post("/send", sendMessagePost);
+// app.post("/send", sendMessagePost);
+app.post("/sendimg", sendMediaPost);
 
 /**
  * Revisamos si existe archivo con credenciales!
