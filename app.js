@@ -311,3 +311,86 @@ app.listen(9000, () => {
 app.get("/prueba", (req, res) => {
   res.send("hola");
 });
+
+// Conexión y registro a la base de datosmysql
+
+var connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "jesus",
+  database: "whatsapp",
+});
+
+// // Check connection
+connection.connect((error) => {
+  if (error) throw error;
+  console.log("Database running!");
+});
+
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.get("/mensajes", (req, res) => {
+  const sql = "SELECT * FROM message";
+
+  connection.query(sql, (error, results) => {
+    if (error) throw error;
+    if (results.length > 0) {
+      res.json(results);
+    } else {
+      res.send("Sin resultados");
+    }
+  });
+
+  // res.send("Lista de mensajes");
+});
+app.get("/mensajes/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = `SELECT * FROM message where IdMessage = ${id}`;
+
+  connection.query(sql, (error, results) => {
+    if (error) throw error;
+    if (results.length > 0) {
+      res.json(results);
+    } else {
+      res.send("Sin resultados");
+    }
+  });
+});
+
+app.post("/mensajes/add", (req, res) => {
+  const sql = "INSERT INTO message SET ?";
+
+  const messageObj = {
+    Phone: req.body.Phone,
+    Message: req.body.Message,
+  };
+  connection.query(sql, messageObj, (error) => {
+    if (error) throw error;
+    res.send("Mensaje creado");
+    // console.log(messageObj);
+    // sendMessage(req.body.Phone, req.body.Message);
+    sendMessage(messageObj.Phone, messageObj.Message);
+  });
+});
+
+app.put("/mensajes/update/:id", (req, res) => {
+  const { id } = req.params;
+  const { Phone, Message } = req.body;
+  const sql = `UPDATE message SET Phone = '${Phone}', Message = '${Message}'
+    WHERE IdMessage = ${id}`;
+
+  connection.query(sql, (error) => {
+    if (error) throw error;
+    res.send("Mensaje Actualizado");
+  });
+});
+
+app.delete("/mensajes/delete/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = `DELETE FROM message WHERE IdMessage = ${id}`;
+
+  connection.query(sql, (error) => {
+    if (error) throw error;
+    res.send("Mensaje Eliminado");
+  });
+});
