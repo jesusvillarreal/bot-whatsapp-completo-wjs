@@ -304,8 +304,9 @@ app.post("/sendimg", sendMediaPost);
  */
 fs.existsSync(SESSION_FILE_PATH) ? withSession() : withOutSession();
 
-app.listen(9000, () => {
-  console.log("Server ready!");
+var PORT = process.env.PORT || 9000;
+app.listen(PORT, () => {
+  console.log("Server ready!", { PORT });
 });
 
 app.get("/prueba", (req, res) => {
