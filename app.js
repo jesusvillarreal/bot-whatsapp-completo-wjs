@@ -310,7 +310,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/prueba", (req, res) => {
-  res.send("hola");
+  res.send("prueba get del chatbot SJT");
 });
 
 // Conexión y registro a la base de datosmysql
